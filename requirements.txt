@@ -1,4 +1,0 @@
-pywebview
-pystray
-Pillow
-pyinstaller
