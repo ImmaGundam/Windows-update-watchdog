@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="main.css">
+
+</head>
+<body>
+
+<div id="main">
+
+<div class="row">
+<div title="Windows Update controls">
+Updates<br>
+<div id="svc" class="light"></div>
+</div>
+
+<div title="Microsoft Defender protection">
+Defender<br>
+<div id="def" class="light"></div>
+</div>
+</div>
+
+<div class="buttons">
+<button id="startBtn" title="Start update patrol loop and preserve Defender">Start</button>
+<button id="stopBtn" title="Stop the watchdog patrol loop without restoring update controls">Stop</button>
+<button id="restoreBtn" title="Undo update blocking changes">Restore</button>
+</div>
+
+<div id="msg">Ready</div>
+
+<button id="settingsBtn" class="iconBtn settingsBtn" title="Open settings">&#9881;</button>
+<button id="aboutBtn" class="iconBtn aboutBtn" title="About">?</button>
+
+</div>
+
+<div id="aboutPage">
+<b>Windows Update Watchdog</b>
+<p class="versionText" id="versionText">Version 1.2.0</p>
+<p class="aboutMeta">
+  <span>© 2026</span>
+  <span class="aboutLinks">
+    <a class="socialIcon" href="https://www.webgeeks.org" target="_blank" rel="noopener" title="WebGeeks IT website" aria-label="WebGeeks IT website">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm6.93 9h-3.02a15.7 15.7 0 0 0-1.38-5.01A8.03 8.03 0 0 1 18.93 11ZM12 4.07c.96 1.17 1.95 3.46 2.29 6.93H9.71C10.05 7.53 11.04 5.24 12 4.07ZM9.47 5.99A15.7 15.7 0 0 0 8.09 11H5.07a8.03 8.03 0 0 1 4.4-5.01ZM4.26 13h3.83a15.7 15.7 0 0 0 1.38 5.01A8.03 8.03 0 0 1 4.26 13ZM12 19.93c-.96-1.17-1.95-3.46-2.29-6.93h4.58c-.34 3.47-1.33 5.76-2.29 6.93Zm2.53-1.92A15.7 15.7 0 0 0 15.91 13h3.83a8.03 8.03 0 0 1-5.21 5.01Z"/>
+      </svg>
+    </a>
+    <a class="socialIcon" href="https://github.com/ImmaGundam/Windows-update-watchdog" target="_blank" rel="noopener" title="GitHub repository" aria-label="GitHub repository">
+      <svg viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M8 0.35A7.65 7.65 0 0 0 5.58 15.26c.38.07.52-.16.52-.36v-1.35c-2.1.46-2.55-.9-2.55-.9-.35-.88-.84-1.11-.84-1.11-.69-.47.05-.46.05-.46.76.05 1.16.78 1.16.78.68 1.15 1.77.82 2.2.63.07-.49.27-.82.49-1.01-1.68-.19-3.44-.84-3.44-3.73 0-.82.3-1.5.78-2.03-.08-.19-.34-.96.07-2 0 0 .64-.2 2.1.78A7.3 7.3 0 0 1 8 4.24c.65 0 1.3.09 1.9.26 1.45-.98 2.09-.78 2.09-.78.41 1.04.15 1.81.07 2 .49.53.78 1.21.78 2.03 0 2.9-1.77 3.54-3.45 3.73.27.23.52.7.52 1.42v2c0 .2.14.43.52.36A7.65 7.65 0 0 0 8 .35Z"/>
+      </svg>
+    </a>
+  </span>
+</p>
+<button id="aboutBackBtn">Back</button>
+</div>
+
+<script src="wrapper/main.js"></script>
+</body>
+</html>

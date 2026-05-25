@@ -1,0 +1,116 @@
+html,
+body{
+  width:100%;
+  height:100%;
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  overflow:hidden;
+}
+*,*::before,*::after{ box-sizing:inherit; }
+body{
+  font-family:Segoe UI,Arial,sans-serif;
+  background:#f2f2f2;
+  font-size:11px;
+}
+#main{
+  width:100vw;
+  height:100vh;
+  position:relative;
+  padding:6px 6px 4px 6px;
+}
+.row{
+  display:flex;
+  justify-content:space-around;
+  text-align:center;
+  line-height:1.15;
+}
+.light{
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  background:gray;
+  margin:3px auto 3px auto;
+}
+.buttons{
+  display:flex;
+  gap:3px;
+  justify-content:center;
+  margin-top:1px;
+}
+button{
+  font-size:10px;
+  padding:2px 5px;
+  line-height:14px;
+}
+.iconBtn{
+  width:22px;
+  height:20px;
+  padding:0;
+  line-height:16px;
+}
+.settingsBtn{
+  position:absolute;
+  left:7px;
+  bottom:5px;
+}
+.aboutBtn{
+  position:absolute;
+  right:7px;
+  bottom:5px;
+}
+#msg{
+  font-size:10px;
+  height:12px;
+  margin-top:2px;
+  text-align:center;
+  color:#555;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#aboutPage{
+  display:none;
+  width:100vw;
+  height:100vh;
+  padding:8px;
+  text-align:center;
+  background:#f2f2f2;
+  box-sizing:border-box;
+}
+#aboutPage p{
+  font-size:10px;
+  margin:5px 0;
+}
+.versionText{
+  font-size:10px;
+  margin:4px 0 6px 0;
+}
+.aboutMeta{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:6px;
+  white-space:nowrap;
+  margin:2px 0 6px 0;
+}
+.aboutLinks{
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  gap:6px;
+}
+.socialIcon{
+  display:inline-flex;
+  width:14px;
+  height:14px;
+  align-items:center;
+  justify-content:center;
+  color:#111;
+}
+.socialIcon svg{
+  width:14px;
+  height:14px;
+  fill:currentColor;
+  display:block;
+}

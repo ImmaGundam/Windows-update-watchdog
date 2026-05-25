@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="status.css">
+</head>
+<body>
+<div id="app">
+  <div id="settingsBox" class="box">
+    <h3>Settings</h3>
+    <div class="settingsGrid">
+      <div class="summaryCard">
+        <div class="summaryItem">
+          <div class="summaryLabel">Updates</div>
+          <span class="statusItem"><span id="summaryUpdates" class="light"></span><span id="summaryUpdatesText">Checking</span></span>
+        </div>
+        <div class="summaryItem">
+          <div class="summaryLabel">Defender</div>
+          <span class="statusItem"><span id="summaryDefender" class="light"></span><span id="summaryDefenderText">Checking</span></span>
+        </div>
+      </div>
+
+      <div class="defenderControls">
+        <label class="ignoreControl" title="Stop showing Defender as red or green"><input type="checkbox" id="ignoreDefender"> Ignore Defender</label>
+        <button id="fixDefenderBtn" title="Repair Defender services and policies">Fix Defender</button>
+        <div id="message">Ready</div>
+      </div>
+
+      <div class="timerPanel">
+        <div class="timerLeft">
+          <div class="timerTitle">Timer:</div>
+          <div class="timerMeta" id="timerMeta">600 second(s)</div>
+        </div>
+
+        <div class="timerInputs">
+          <label class="timeField">
+            <input type="number" id="intervalSeconds" min="0" step="1" inputmode="numeric">
+          </label>
+        </div>
+
+        <button id="applyIntervalBtn" title="Apply the watch interval">Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="statusGrid">
+    <div class="statusColumn">
+      <div class="box serviceBox">
+        <h3>Update Services</h3>
+        <div id="updateRows"></div>
+        <div class="note">Required services: green means stopped and disabled.<br>WaaSMedicSvc is optional; red only if running.</div>
+      </div>
+    </div>
+
+    <div class="statusColumn">
+      <div id="defenderBox" class="box defenderBox">
+        <div class="section">
+          <h3>Defender Services</h3>
+          <div id="defenderRows"></div>
+          <div class="note">WinDefend should be running.<br>WdNisSvc should be available.<br>Sense is optional.</div>
+        </div>
+
+        <div class="section">
+          <h3>Defender Protection</h3>
+          <div id="mpRows"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="activityBox" class="box">
+    <h3>Activity</h3>
+    <div id="terminal"></div>
+  </div>
+</div>
+
+<script src="wrapper/status.js"></script>
+</body>
+</html>
