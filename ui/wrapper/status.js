@@ -1,6 +1,9 @@
 (function () {
   "use strict";
 
+  const DEFAULT_INTERVAL_SECONDS = 600;
+  const MAX_INTERVAL_SECONDS = 43200;
+
   function getApi() {
     if (!window.pywebview || !window.pywebview.api) {
       throw new Error("pywebview api unavailable");
@@ -21,7 +24,10 @@
 
   function parseValue(el) {
     const value = parseInt(el.value || "0", 10);
-    return Number.isFinite(value) && value >= 0 ? value : 0;
+    if (!Number.isFinite(value)) {
+      return 1;
+    }
+    return Math.min(MAX_INTERVAL_SECONDS, Math.max(1, value));
   }
 
   function buildRow(name, status, meta, ignored) {
@@ -83,6 +89,36 @@
     return "Unknown";
   }
 
+  function pluralize(value, unit) {
+    return `${value} ${unit}${value === 1 ? "" : "s"}`;
+  }
+
+  function formatDuration(seconds) {
+    let remaining = Math.min(MAX_INTERVAL_SECONDS, Math.max(1, parseInt(seconds || "1", 10)));
+    const days = Math.floor(remaining / 86400);
+    remaining %= 86400;
+    const hours = Math.floor(remaining / 3600);
+    remaining %= 3600;
+    const minutes = Math.floor(remaining / 60);
+    remaining %= 60;
+
+    const parts = [];
+    if (days) {
+      parts.push(pluralize(days, "day"));
+    }
+    if (hours) {
+      parts.push(pluralize(hours, "hour"));
+    }
+    if (minutes) {
+      parts.push(pluralize(minutes, "minute"));
+    }
+    if (remaining || parts.length === 0) {
+      parts.push(pluralize(remaining, "second"));
+    }
+
+    return parts.join(" ");
+  }
+
   async function waitForApi(maxAttempts, delayMs) {
     for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
       if (window.pywebview && window.pywebview.api) {
@@ -110,6 +146,33 @@
     const fixDefenderBtn = document.getElementById("fixDefenderBtn");
     const timerMeta = document.getElementById("timerMeta");
     const message = document.getElementById("message");
+    let lastLogText = null;
+    let maxIntervalSeconds = MAX_INTERVAL_SECONDS;
+
+    function captureViewport() {
+      return {
+        x: window.scrollX || window.pageXOffset || 0,
+        y: window.scrollY || window.pageYOffset || 0,
+        terminalTop: terminal.scrollTop
+      };
+    }
+
+    function restoreViewport(viewport) {
+      terminal.scrollTop = Math.min(viewport.terminalTop, terminal.scrollHeight);
+      window.scrollTo(viewport.x, viewport.y);
+    }
+
+    function appendTerminalLine(text) {
+      const viewport = captureViewport();
+      terminal.textContent += text;
+      restoreViewport(viewport);
+    }
+
+    function setTimerMeta(seconds) {
+      const total = Math.min(maxIntervalSeconds, Math.max(1, parseInt(seconds || "1", 10)));
+      timerMeta.textContent = formatDuration(total);
+      timerMeta.title = `${pluralize(total, "second")} between checks`;
+    }
 
     function renderStatus(status) {
       setLight(summaryUpdates, status.services);
@@ -118,15 +181,21 @@
       summaryDefenderText.textContent = status.defender === null ? "Ignored" : (status.defender ? "OK" : "Check");
 
       const details = status.details || {};
+      maxIntervalSeconds = details.guard_interval_max_seconds || MAX_INTERVAL_SECONDS;
       const ignored = details.ignore_defender === true;
       if (document.activeElement !== ignoreDefender) {
         ignoreDefender.checked = ignored;
       }
       if (intervalValue && document.activeElement !== intervalValue) {
-        intervalValue.value = details.guard_interval_seconds || 600;
+        intervalValue.max = String(maxIntervalSeconds);
+        intervalValue.value = details.guard_interval_seconds || DEFAULT_INTERVAL_SECONDS;
       }
 
-      timerMeta.textContent = `${details.guard_interval_seconds || 600} second(s)`;
+      setTimerMeta(
+        intervalValue && document.activeElement === intervalValue
+          ? parseValue(intervalValue)
+          : details.guard_interval_seconds || DEFAULT_INTERVAL_SECONDS
+      );
       message.textContent = details.updates && details.updates.guard_enabled ? "Status: enabled" : "Status: disabled";
 
       defenderBox.classList.toggle("ignored-card", ignored);
@@ -204,21 +273,32 @@
       mpRows.appendChild(buildRow("TamperProtected", data.IsTamperProtected === true, boolMeta(data.IsTamperProtected), ignored));
     }
 
+    function renderStatusPreservingViewport(status) {
+      const viewport = captureViewport();
+      renderStatus(status);
+      restoreViewport(viewport);
+    }
+
     async function refresh() {
       try {
         const status = await getApi().get_status();
-        renderStatus(status);
+        renderStatusPreservingViewport(status);
       } catch (err) {
-        terminal.textContent += "\n[error] status refresh failed: " + err;
+        appendTerminalLine("\n[error] status refresh failed: " + err);
         message.textContent = "Status error";
       }
 
       try {
         const log = await getApi().get_activity_log();
-        terminal.textContent = (log.lines || []).join("\n");
-        terminal.scrollTop = terminal.scrollHeight;
+        const nextLogText = (log.lines || []).join("\n");
+        if (nextLogText !== lastLogText) {
+          const viewport = captureViewport();
+          terminal.textContent = nextLogText;
+          lastLogText = nextLogText;
+          restoreViewport(viewport);
+        }
       } catch (err) {
-        terminal.textContent += "\n[error] log refresh failed: " + err;
+        appendTerminalLine("\n[error] log refresh failed: " + err);
       }
     }
 
@@ -227,7 +307,7 @@
         fixDefenderBtn.disabled = true;
         fixDefenderBtn.textContent = "Fixing...";
         const status = await getApi().fix_defender();
-        renderStatus(status);
+        renderStatusPreservingViewport(status);
       } catch (err) {
         console.error(err);
         message.textContent = "Defender error";
@@ -240,11 +320,14 @@
     async function applyInterval() {
       try {
         applyIntervalBtn.disabled = true;
+        if (intervalValue) {
+          intervalValue.value = String(parseValue(intervalValue));
+        }
         const status = await getApi().set_guard_interval(
           parseValue(intervalValue),
           intervalUnit ? intervalUnit.value : "seconds"
         );
-        renderStatus(status);
+        renderStatusPreservingViewport(status);
       } catch (err) {
         console.error(err);
         message.textContent = "Interval update failed";
@@ -256,7 +339,7 @@
     ignoreDefender.addEventListener("change", async function () {
       try {
         const status = await getApi().toggle_ignore(ignoreDefender.checked);
-        renderStatus(status);
+        renderStatusPreservingViewport(status);
       } catch (err) {
         console.error(err);
         message.textContent = "Ignore update failed";
@@ -264,6 +347,12 @@
     });
 
     if (intervalValue) {
+      intervalValue.addEventListener("input", function () {
+        if (parseInt(intervalValue.value || "0", 10) > maxIntervalSeconds) {
+          intervalValue.value = String(maxIntervalSeconds);
+        }
+        setTimerMeta(parseValue(intervalValue));
+      });
       intervalValue.addEventListener("change", applyInterval);
     }
     if (intervalUnit) {
