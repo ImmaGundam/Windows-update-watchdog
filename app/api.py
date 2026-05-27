@@ -1,4 +1,5 @@
 from .defender import fix_defender_logic
+from .config import MAX_GUARD_INTERVAL_SECONDS
 from .logging_store import add_log, get_activity_snapshot, log_defender_results, log_update_results, set_current_action
 from .state import STATE
 from .status import check_status
@@ -128,7 +129,8 @@ class API:
             unit = "seconds"
             total = value
 
-        total = max(1, total)
+        total = min(MAX_GUARD_INTERVAL_SECONDS, max(1, total))
         STATE.update_guard_interval_seconds = total
+        STATE.guard_interval_changed.set()
         add_log(f"Watch interval set to {value} {unit} [{total} second(s)]")
         return check_status()

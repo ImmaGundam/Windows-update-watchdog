@@ -18,6 +18,7 @@ class AppState:
     current_action: str = "Idle"
     activity_log: list[str] = field(default_factory=list)
     shutdown_requested: threading.Event = field(default_factory=threading.Event)
+    guard_interval_changed: threading.Event = field(default_factory=threading.Event)
     defender_cache: DefenderCache = field(default_factory=DefenderCache)
     status_lock: threading.Lock = field(default_factory=threading.Lock)
     activity_lock: threading.Lock = field(default_factory=threading.Lock)

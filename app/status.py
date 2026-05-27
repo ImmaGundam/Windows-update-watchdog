@@ -1,5 +1,5 @@
 from .admin import is_admin
-from .config import APP_VERSION, UPDATE_OPTIONAL_SERVICES, UPDATE_SERVICES
+from .config import APP_VERSION, MAX_GUARD_INTERVAL_SECONDS, UPDATE_OPTIONAL_SERVICES, UPDATE_SERVICES
 from .defender import check_defender
 from .service_ops import get_service_info, update_service_optional_ok, update_service_required_ok
 from .state import STATE
@@ -39,7 +39,7 @@ def check_status():
     with STATE.status_lock:
         updates = check_update_controls()
         defender = check_defender()
-        interval_seconds = max(1, int(STATE.update_guard_interval_seconds))
+        interval_seconds = min(MAX_GUARD_INTERVAL_SECONDS, max(1, int(STATE.update_guard_interval_seconds)))
 
         return {
             "services": updates["ok"],
@@ -51,6 +51,7 @@ def check_status():
                 "admin": is_admin(),
                 "version": APP_VERSION,
                 "guard_interval_seconds": interval_seconds,
+                "guard_interval_max_seconds": MAX_GUARD_INTERVAL_SECONDS,
                 "guard_interval_parts": _interval_parts(interval_seconds),
             },
         }

@@ -1,3 +1,6 @@
+import time
+
+from .config import MAX_GUARD_INTERVAL_SECONDS
 from .defender import check_defender, fix_defender_logic
 from .logging_store import add_log, log_defender_results, log_update_results, set_current_action
 from .service_ops import update_service_optional_ok, update_service_required_ok
@@ -6,11 +9,32 @@ from .status import check_update_controls
 from .update_controls import disable_update_controls
 
 
+def wait_for_guard_interval():
+    started_at = time.monotonic()
+
+    while not STATE.shutdown_requested.is_set():
+        interval = min(MAX_GUARD_INTERVAL_SECONDS, max(1, int(STATE.update_guard_interval_seconds)))
+        remaining = interval - (time.monotonic() - started_at)
+
+        if remaining <= 0:
+            return True
+
+        if STATE.shutdown_requested.wait(min(remaining, 0.25)):
+            return False
+
+        if STATE.guard_interval_changed.is_set():
+            STATE.guard_interval_changed.clear()
+            started_at = time.monotonic()
+
+    return False
+
+
 def update_guard_loop():
     while not STATE.shutdown_requested.is_set():
-        interval = max(1, int(STATE.update_guard_interval_seconds))
-        STATE.shutdown_requested.wait(interval)
-        if STATE.shutdown_requested.is_set() or not STATE.update_guard_enabled:
+        if not wait_for_guard_interval():
+            break
+
+        if not STATE.update_guard_enabled:
             continue
 
         try:
