@@ -1,6 +1,7 @@
 <div align="center"><h1>Windows Update Watchdog</h1>
 <img width="256" height="119" alt="Screenshot 2026-05-04 153442" src="https://github.com/user-attachments/assets/4e73b15b-5f4f-4884-a0e8-1d0a2de2b906" />
-<br></div>
+<br><br>
+<div align="center"><b>Current Version:</b> 1.2.1 </div><br>
 
 A tiny Windows 10/11 administration utility that watches Windows Update controls
 while keeping Microsoft Defender visible, repairable, and enabled.
@@ -15,7 +16,9 @@ status lights, and a diagnostics panel for checking what the watchdog is doing.
 I made this because I did not want Copilot embedded in my operating system, and
 neither should you.
 
-This was my refusal to install.
+This was my refusal to install.<br><br>
+
+<div align="center"><img width="186" height="128" alt="Screenshot 2026-05-27 183625" src="https://github.com/user-attachments/assets/36465fd7-fca2-4848-8f3c-d6df5ec0c5e4" /></div><br>
 
 A few days after creation, I watched Windows push 20+ OTA updates to force any
 non-upgraded Windows 11 machine to have no option but to accept the feature
@@ -23,7 +26,7 @@ update. Good things do not come by forcing them like this.
 
 Take control of your PC.
 
-<div align="center"><img width="600" height="auto" alt="Screenshot 2026-05-04" src="https://github.com/user-attachments/assets/398cb16a-3ee8-4e65-994d-563c44cd9d75" />
+<div align="center"><img width="600" height="auto" alt="Windows Update Watchdog" src="https://github.com/user-attachments/assets/ce0a9d2b-260d-4aba-a0c5-4166497ca614" />
 </div><br>
 
 
@@ -103,7 +106,7 @@ scheduled task changes, metered network changes, and Defender repair actions.
 ## How to run
 
 ```cmd
-python watchdog.pyw
+python main.pyw
 ```
 
 The app opens a tiny window and also runs a tray icon.
@@ -252,7 +255,7 @@ here is not treated as fatal.
 The loop checks at the configured interval, defaulting to:
 
 ```text
-8 seconds
+600 seconds
 ```
 
 The interval can be changed in the diagnostics/settings window.
@@ -524,74 +527,6 @@ flowchart TD
 ---
 
 <details>
-<summary><strong>Packaging with PyInstaller</strong></summary>
-
-This project can be compiled manually from Command Prompt. No PowerShell build
-script is required.
-
-Expected project files:
-
-```text
-watchdog.pyw
-ui.html
-status.html
-version_info.txt
-assets\app_icon.ico
-```
-
-Install build dependencies:
-
-```cmd
-python -m pip install --upgrade pip
-python -m pip install pyinstaller pywebview pystray pillow
-```
-
-Clean old output:
-
-```cmd
-if exist build rmdir /s /q build
-if exist dist rmdir /s /q dist
-if exist WindowsUpdateWatchdog.spec del WindowsUpdateWatchdog.spec
-```
-
-Build:
-
-```cmd
-python -m PyInstaller ^
-  --noconfirm ^
-  --clean ^
-  --onefile ^
-  --windowed ^
-  --name "WindowsUpdateWatchdog" ^
-  --icon "assets\app_icon.ico" ^
-  --version-file "version_info.txt" ^
-  --add-data "ui.html;." ^
-  --add-data "status.html;." ^
-  --add-data "assets\app_icon.ico;assets" ^
-  --collect-all pystray ^
-  --collect-all PIL ^
-  --hidden-import webview.platforms.edgechromium ^
-  --hidden-import webview.platforms.winforms ^
-  --hidden-import webview.platforms.win32 ^
-  "watchdog.pyw"
-```
-
-Output:
-
-```text
-dist\WindowsUpdateWatchdog.exe
-```
-
-Important build flags:
-
-| Flag | Purpose |
-|---|---|
-| `--collect-all pystray` | Prevents missing `pystray` errors in compiled builds. |
-| `--collect-all PIL` | Bundles Pillow image/icon support. |
-| `--version-file version_info.txt` | Embeds Windows EXE metadata. |
-| `--icon assets\app_icon.ico` | Applies the app icon to the compiled EXE. |
-
-</details>
 
 ---
 
