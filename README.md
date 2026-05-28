@@ -1,30 +1,25 @@
 <div align="center"><h1>Windows Update Watchdog</h1>
 <img width="256" height="119" alt="Screenshot 2026-05-04 153442" src="https://github.com/user-attachments/assets/4e73b15b-5f4f-4884-a0e8-1d0a2de2b906" />
-<br><br>
+<br><br></div>
 <div align="center"><b>Current Version:</b> 1.2.1 </div><br>
 
-A tiny Windows 10/11 administration utility that watches Windows Update controls
+A tiny Windows 10/11 administration utility that watches and keeps Windows Update services disabled
 while keeping Microsoft Defender visible, repairable, and enabled.
 
-The app is intentionally small: a compact window, tray icon, update/Defender
-status lights, and a diagnostics panel for checking what the watchdog is doing.
+The app is intentionally small: a compact window ui, sleeps to tray-icon, Update & Defender
+status lights, and a diagnostics panel for checking what the watchdog is doing or configuring the timer.
 
 ---
 
 ## Project purpose
 
-I made this because I did not want Copilot embedded in my operating system, and
-neither should you.
-
-This was my refusal to install.<br><br>
+I made this as a method to have better control over any Windows 11 system without debloating or removing services.<br><br>
+This app only "maintains a disabled state" for Windows related services to prevent an update from occuring, or windows services from self healing and re-enabling.<br>
+This is made as a simple, reversable way to stop and control Windows update services.<br><br>
+It is capable of ignoring Defender services (if you don't use it, so it wont flag them disabled), and gives you a small console activity log that shows functions performed or services toggled.<br>
 
 <div align="center"><img width="186" height="128" alt="Screenshot 2026-05-27 183625" src="https://github.com/user-attachments/assets/36465fd7-fca2-4848-8f3c-d6df5ec0c5e4" /></div><br>
 
-A few days after creation, I watched Windows push 20+ OTA updates to force any
-non-upgraded Windows 11 machine to have no option but to accept the feature
-update. Good things do not come by forcing them like this.
-
-Take control of your PC.
 
 <div align="center"><img width="600" height="auto" alt="Windows Update Watchdog" src="https://github.com/user-attachments/assets/ce0a9d2b-260d-4aba-a0c5-4166497ca614" />
 </div><br>
