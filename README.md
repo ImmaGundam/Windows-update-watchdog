@@ -22,8 +22,9 @@ It is capable of ignoring Defender services (if you don't use it, so it wont fla
 
 
 <div align="center"><img width="600" height="auto" alt="Windows Update Watchdog" src="https://github.com/user-attachments/assets/ce0a9d2b-260d-4aba-a0c5-4166497ca614" />
-</div><br>
+</div><br><br>
 
+#### Note: WindowsUpdate-AdminTool.ps1 is the manual powershell version of the python application.<br>
 
 > This program is not recommended for everyone. Please do your own research on
 > whether you absolutely need to disable Windows updates.
