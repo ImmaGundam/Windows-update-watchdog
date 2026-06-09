@@ -11,6 +11,8 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout
@@ -25,16 +27,25 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pyinstaller
+          pip install pyinstaller pyinstaller-versionfile
           pip install -r docs/requirements.txt
 
-      # PyInstaller flags:
-      #   --windowed        no console window (equivalent to .pyw)
-      #   --onefile         single portable .exe
-      #   --version-file    embeds Windows PE metadata (name, version, description, etc.)
-      #   --collect-all     bundles all pywebview data, backends, and hidden imports
-      #   pystray._win32    win32 tray backend isn't auto-detected
-      #   PIL.Image         Pillow import used dynamically for tray icon creation
+      - name: Generate version info
+        shell: python
+        run: |
+          import pyinstaller_versionfile
+          pyinstaller_versionfile.create_versionfile(
+              output_file="version_info.txt",
+              version="1.2.1.0",
+              company_name="James Deitz",
+              file_description="Windows System Admin tool that manages Windows Update & Defender services.",
+              internal_name="WindowsUpdateWatchdog",
+              legal_copyright="© James Deitz",
+              original_filename="WindowsUpdateWatchdog.exe",
+              product_name="Windows Update Watchdog",
+              comments="https://jamesdeitz.dev | https://github.com/ImmaGundam/Windows-update-watchdog",
+          )
+
       - name: Build executable
         shell: bash
         run: |
@@ -43,7 +54,7 @@ jobs:
             --windowed \
             --onefile \
             --icon "assets/icon.ico" \
-            --version-file "$GITHUB_WORKSPACE/version_info.txt" \
+            --version-file "version_info.txt" \
             --add-data "ui;ui" \
             --add-data "assets;assets" \
             --collect-all pywebview \
@@ -61,8 +72,6 @@ jobs:
           path: dist/WindowsUpdateWatchdog.exe
           if-no-files-found: error
 
-      # Creates a GitHub Release and attaches the .exe when a v* tag is pushed.
-      # Requires the default GITHUB_TOKEN — no extra secrets needed.
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
