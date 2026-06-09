@@ -43,7 +43,6 @@ jobs:
               legal_copyright="© James Deitz",
               original_filename="WindowsUpdateWatchdog.exe",
               product_name="Windows Update Watchdog",
-              comments="https://jamesdeitz.dev | https://github.com/ImmaGundam/Windows-update-watchdog",
           )
 
       - name: Build executable
