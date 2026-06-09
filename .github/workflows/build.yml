@@ -43,7 +43,7 @@ jobs:
             --windowed \
             --onefile \
             --icon "assets/icon.ico" \
-            --version-file "version_info.txt" \
+            --version-file "$GITHUB_WORKSPACE/version_info.txt" \
             --add-data "ui;ui" \
             --add-data "assets;assets" \
             --collect-all pywebview \
