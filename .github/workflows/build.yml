@@ -1,0 +1,71 @@
+name: Build
+
+on:
+  push:
+    branches: [main, master]
+    tags: ["v*"]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+          pip install -r docs/requirements.txt
+
+      # PyInstaller flags:
+      #   --windowed        no console window (equivalent to .pyw)
+      #   --onefile         single portable .exe
+      #   --version-file    embeds Windows PE metadata (name, version, description, etc.)
+      #   --collect-all     bundles all pywebview data, backends, and hidden imports
+      #   pystray._win32    win32 tray backend isn't auto-detected
+      #   PIL.Image         Pillow import used dynamically for tray icon creation
+      - name: Build executable
+        shell: bash
+        run: |
+          pyinstaller \
+            --name "WindowsUpdateWatchdog" \
+            --windowed \
+            --onefile \
+            --icon "assets/icon.ico" \
+            --version-file "version_info.txt" \
+            --add-data "ui;ui" \
+            --add-data "assets;assets" \
+            --collect-all pywebview \
+            --hidden-import "pystray._win32" \
+            --hidden-import "PIL.Image" \
+            main.pyw
+
+      - name: Smoke-test binary exists
+        run: Test-Path dist\WindowsUpdateWatchdog.exe
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: WindowsUpdateWatchdog-${{ github.ref_name }}
+          path: dist/WindowsUpdateWatchdog.exe
+          if-no-files-found: error
+
+      # Creates a GitHub Release and attaches the .exe when a v* tag is pushed.
+      # Requires the default GITHUB_TOKEN — no extra secrets needed.
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/WindowsUpdateWatchdog.exe
+          generate_release_notes: true
