@@ -13,7 +13,6 @@ jobs:
     runs-on: windows-latest
     permissions:
       contents: write
-    env:
 
     steps:
       - name: Checkout
